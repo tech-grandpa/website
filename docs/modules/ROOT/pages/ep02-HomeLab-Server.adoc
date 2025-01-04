@@ -1,0 +1,15 @@
+= My perfect AI home lab beast!
+
+:keywords: 192gb ram,192gb ram ddr5,LLM,ProArt X670E-CREATOR WIFI,ai,ai inference,ai workstation,asus proart motherboard,corsair vengeance,corsair vengeance ddr5 192GB,homelab,inference,multi gpu,multi gpu pc build,nvidia 3090,nvidia a4000,nvidia a5000,nvidia a6000,nvidia rtx 3090,nvidia rtx a4000,nvidia rtx a5000,optane drive,rtx a5000,ryzen 7 7950x,ddr5 ram,artificial intelligence,machine learning,large language model
+:description: Looking to power private AI agents without breaking the bank? Check out my home lab beast setup with multi-GPU support for artificial intelligence tasks! My home lab build not only supports classic home lab use cases, but also local AI with open source models for agent deployments, which require a lot of VRAM. Follow along going into the details of the build and checkout the parts in the list below. Part Picker with all the parts that went into the build: https://pcpartpicker.com/list/j3nxL9
+:youtube: Y5h4Fq3j5wo
+
+Looking to power private AI agents without breaking the bank? Check out my home lab beast setup with multi-GPU support for artificial intelligence tasks! 
+
+My home lab build not only supports classic home lab use cases, but also local AI with open source models for agent deployments, which require a lot of gpu VRAM. Follow along going into the details of the build and checkout the parts in the list below.
+
+video::Y5h4Fq3j5wo[youtube,list=PLJkYus8HjPlFL6Q0Hv4bQ7NYT1HZLSxxp,width=780,height=439]
+
+Part Picker with all the parts that went into the build:
+
+https://pcpartpicker.com/list/j3nxL9

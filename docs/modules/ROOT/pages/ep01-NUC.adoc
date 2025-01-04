@@ -1,0 +1,20 @@
+= Unlock the Power of AI in Your Home Lab
+
+:keywords: IOMMU,LLM,NUC,NVIDIA RTX 3090,PCIe,ai,ai acceleration,ai inference,ai workloads,artificial intelligence,eGPU,egpu,external GPU,homelab,inference,llm,machine learning,mixtral,performance,phi3,proxmox
+:description: Upgrade your mini PC like the NUC to handle AI workloads with an external GPU! Learn how to boost your homelab setup with this simple upgrade. In this video, I delve into the world of AI and explore how you can utilize external GPUs to enhance your home lab setup for handling large language models. Discover the simplicity of setting up an external GPU enclosure and aspects of choosing the right graphics card for seamless integration. I also discuss the cost-effectiveness of this solution, weighing the benefits against the potentially steep price tag. Plus, get a sneak peek into our upcoming videos where I'll dive deeper into graphic card selection, performance comparisons, and my AI machine build. So, sit back, relax, and let's dive into the world of AI together.
+:youtube: EQhK_2savvA
+
+In this video, I delve into the world of AI and explore how you can utilize external GPUs to enhance your home lab setup for handling large language models. Discover the simplicity of setting up an external GPU enclosure and aspects of choosing the right graphics card for seamless integration. 
+
+I also discuss the cost-effectiveness of this solution, weighing the benefits against the potentially steep price tag. Plus, get a sneak peek into our upcoming videos where I'll dive deeper into graphic card selection, performance comparisons, and my AI machine build. So, sit back, relax, and let's dive into the world of AI together.
+
+video::EQhK_2savvA[youtube,list=PLJkYus8HjPlFL6Q0Hv4bQ7NYT1HZLSxxp,width=780,height=439]
+
+Here are some useful links from the video.
+
+Proxmox PCIe Passthrough guides: 
+
+* https://pve.proxmox.com/wiki/PCI_Passthrough
+* https://pve.proxmox.com/wiki/PCI(e)_Passthrough
+
+

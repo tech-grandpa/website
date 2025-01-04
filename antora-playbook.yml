@@ -1,0 +1,22 @@
+site:
+  title: Tech Grandpa
+  url: https://tech-grandpa.org
+  start_page: website::index.adoc
+  robots: allow
+content:
+  sources:
+  - url: .
+    branches: main
+    worktrees: false
+    edit_url: false
+    start_path: /docs 
+runtime:
+  fetch: true
+antora:
+  extensions:
+    - '@antora/lunr-extension'  
+ui:
+  bundle:
+    url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/HEAD/raw/build/ui-bundle.zip?job=bundle-stable
+    snapshot: true
+  supplemental_files: ./supplemental-ui

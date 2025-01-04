@@ -1,0 +1,103 @@
+= How to create VM templates in Proxmox 
+
+:keywords: proxmox, ubuntu, vm template, cloud init, ai template
+:description: Proxmox template creation for Ubuntu 24.04 LTS with cloud init support. This template is used for creating VMs for AI inference and training with GPU passthrough enabled.
+:source-language: bash
+
+:toc:
+
+## Pre-Requisites
+
+Before we could start, we need to make sure, everything is setup correctly. Login into the root shell of the proxmox server. Install the libguestfs-tools to be able to manipulate vm images.
+
+[source, bash]
+----
+// install the necessary tools on the proxmox host
+apt update -y && apt install libguestfs-tools -y
+----
+
+## Step 01: Get the Ubuntu image 
+
+First we need to download the Ubuntu image and copy it to the proxmox template directory. For convenience we also rename it to ubuntu-base.img. This makes it easier to identify the image later on, even if we have different images later on.
+[source, bash]
+----
+// change to the directory where proxmox keeps the iso images by default
+cd /var/lib/vz/template/iso/
+
+wget -P /var/lib/vz/template/iso/ https://cloud-images.ubuntu.com/daily/server/releases/24.04/release/ubuntu-24.04-server-cloudimg-amd64.img
+
+cp ubuntu-24.04-server-cloudimg-amd64.img ubuntu-base.img
+----
+
+## Step 02: Massage the image to contain everything
+
+We need to install the qemu-guest-agent to be able to use the cloud init feature of proxmox. We also install the ubuntu-drivers-common package to be able to automatically install the correct drivers for the GPU.
+
+[source, bash]
+----
+virt-customize -a ubuntu-base.img --install qemu-guest-agent
+
+// sudo apt install ubuntu-drivers-common
+virt-customize -a ubuntu-base.img --install ubuntu-drivers-common
+
+// optionally disable ipv6
+virt-customize -a ubuntu-base.img --run-command "echo 'net.ipv6.conf.all.disable_ipv6 = 1' >> /etc/sysctl.conf"
+virt-customize -a ubuntu-base.img --run-command "echo 'net.ipv6.conf.default.disable_ipv6 = 1' >> /etc/sysctl.conf"
+virt-customize -a ubuntu-base.img --run-command "echo 'net.ipv6.conf.lo.disable_ipv6 = 1' >> /etc/sysctl.conf"
+virt-customize -a ubuntu-base.img --run-command "sysctl -p"
+
+
+// remove unique identifier of the image 
+virt-customize -a ubuntu-base.img --run-command "cloud-init clean --seed --logs --machine-id && truncate -s 0 /etc/machine-id"
+----
+
+
+## Step 03: Create the VM template
+
+----
+qm create 6000 \
+  --name "ubuntu-24.04-cloud-init-template" \
+  --memory 16384 \
+  --cores 4 \
+  --cpu host \
+  --machine q35 \
+  --description "Base ubuntu 24.04 template" \
+  --net0 virtio,bridge=vmbr0,tag=42 \
+  --agent enabled=1 \
+  --ipconfig0 ip=dhcp \
+  --tags ubuntu-template,24.04LTS
+
+qm importdisk 6000 /var/lib/vz/template/iso/ubuntu-base.img fastSingle
+
+
+qm set 6000 --scsihw virtio-scsi-pci \
+  --scsi0 fastSingle:vm-6000-disk-0,ssd=1 \
+  --boot c \
+  --bootdisk scsi0 \
+  --ide2 fastSingle:cloudinit \
+  --serial0 socket --vga serial0 \
+  --bios ovmf \
+  --efidisk0 fastSingle:0,efitype=4m,size=4M
+  
+qm set 6000 --ciuser ng \
+  --cipassword Pass1234 \
+  --sshkey /etc/pve/priv/authorized_keys
+
+qm resize 6000 scsi0 +200G
+
+qm template 6000
+
+----
+
+## Step 04: Create an VM from the template
+----
+qm clone 6000 200 --name worker-01 --full --storage fastSingle --description "Ubuntu 24.04 cloud image."
+----
+
+# References
+
+https://pve.proxmox.com/wiki/Cloud-Init_Support
+
+https://pve.proxmox.com/wiki/Cloud-Init_Support#GPU_passthrough
+
+https://libguestfs.org/

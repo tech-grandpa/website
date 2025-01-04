@@ -1,0 +1,32 @@
+= Will Project DIGITS Revolutionize The Way We Use LLMs Forever?
+
+:keywords: nvidia ces 2025, nvidia, project digits, project digits nvidia, llm, llm hardware, llm home lab, nvidia news, Blackwell, edge computing, edge llm, iot llm, ai, blackwell ai technology, nvidia ces, ces, nvidia ai gpus, nvidia release, blackwell, large language models, apple mac mini m4
+:description: Project DIGITS by NVIDIA is a game-changer in the world of AI and LLMs. This device is set to revolutionize the way we use LLMs forever. In this video, I delve into the details of this groundbreaking technology and discuss why it might become the first device of its kind. Join me as I explore the potential of Project DIGITS and how it could become a household staple in the future.
+:youtube: NEi9oJbwZC4
+
+
+I've been following the NVIDIA news for a while now, and I'm excited to see that they have released Project DIGITS.
+
+I think NVIDIAs project DIGITS might be the start of an entirely new device category. 
+
+Follow me along while I go into the details, why I think this might become the first device of it's kind and within a few years, it'll be part of virtually every household - like the rise of the iPhone in 2007.
+
+video::NEi9oJbwZC4[youtube,width=780,height=439]
+
+== Sources
+* NVIDIA Puts Grace Blackwell on Every Desk and at Every AI Developer’s Fingertips
+  https://nvidianews.nvidia.com/news/nvidia-puts-grace-blackwell-on-every-desk-and-at-every-ai-developers-fingertips
+* NVIDIA Project DIGITS - A Grace Blackwell AI Supercomputer on your desk.
+  https://www.nvidia.com/en-us/project-digits/
+* Introducing NVIDIA Project DIGITS | A Grace Blackwell AI Supercomputer on your desk 
+  https://www.youtube.com/watch?v=kZRMshaNrSA
+* NVIDIA Networking: Purpose-Built for AI 
+  https://www.youtube.com/watch?v=0TL_XyE5EsI
+* The AI Factory: How NVIDIA Builds the Engine for the New Industrial Revolution
+  https://www.youtube.com/watch?v=t_jiScDhf3M
+* Why I think that NVIDIA Project DIGITS will have 273 GB/s of memory bandwidth
+  https://www.reddit.com/r/LocalLLaMA/comments/1hwthrq/why_i_think_that_nvidia_project_digits_will_have/
+* Rename NVIDIA Project DIGITS | #CES2025
+   https://www.youtube.com/watch?v=G-eWYam9XsQ
+* Samsung Fridge 
+  https://www.allround-pc.com/news/2022/samsung-family-hub-plus-riesenbildschirm-fuer-den-smart-fridge

@@ -1,0 +1,15 @@
+= The Nitty-Gritty YouTube Channel
+
+:keywords: ai, home lab, llm, open source, technology, coding, tutorials, ai news, youtube, youtube channel, tech grandpa, the nitty gritty, the nitty gritty youtube channel, the nitty gritty tech grandpa, ai agent, ai inference, ai training, ai home lab, ai external gpu, ai external gpu home lab, ai external gpu home lab youtube channel, ai external gpu home lab tech grandpa
+:description: Home lab, Artificial Intelligence (AI), Open Source, Large Language Models (LLM), AI @ The Edge, Security, Technology, Coding, Tutorials, AI News, and more
+
+
+[discrete.tagline]
+=== AI, Home Labs, and Technology
+
+Welcome to the Website of The Nitty-Gritty YouTube Channel! Here, we explore the world of AI, home labs, and technology. Dive into the latest trends in AI, learn how to build your own AI home lab, and discover the power of large language models (LLM). Whether you're a seasoned tech enthusiast or just starting out, you'll find something to pique your interest here. So, sit back, relax, and let's dive into the world of AI together.
+
+I try to document my journey and share my experiences, insights, and knowledge with the community. I hope you find the content useful and engaging. If you have any questions, suggestions, or feedback, feel free to reach out - either via github issues or on my youtube channel. I'm always happy to connect with fellow tech enthusiasts and AI aficionados. 
+
+
+

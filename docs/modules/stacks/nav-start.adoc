@@ -1,0 +1,2 @@
+* Proxmox
+** xref:proxmox/proxmox_ubuntu_template.adoc[Proxmox Ubuntu Template]

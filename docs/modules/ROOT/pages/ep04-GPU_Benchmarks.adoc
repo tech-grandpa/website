@@ -1,0 +1,9 @@
+= GPU Benchmarks For Your AI Agents
+
+:keywords: ai inference speed, ai inference benchmark, machine learning, artificial intelligence, ai agents, 
+:description: TBD
+:youtube: EQhK_2savvA
+
+
+
+video::EQhK_2savvA[youtube,list=PLJkYus8HjPlFL6Q0Hv4bQ7NYT1HZLSxxp,width=780,height=439]

@@ -1,2 +1,24 @@
 # Website repository
 
+## Local development
+
+Install node and Antora
+--> https://docs.antora.org/antora/latest/install-and-run-quickstart/
+
+then run install once:
+```
+// required plugins
+npm install @antora/lunr-extension
+
+// http server for testing later
+npm install -g http-server
+````
+
+then run this:
+```
+npx antora antora-playbook.yml
+```
+
+server the website locally on port 3000 via:
+
+http-server build/site -c-1
