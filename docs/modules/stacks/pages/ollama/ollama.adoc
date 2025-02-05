@@ -1,0 +1,150 @@
+= Ollama
+
+:keywords: ollama, ai, agent, chatbot, language model, open source, llama.cpp
+:description: Ollama is an open-source tool to host LLMs on your own hardware. It offers a wide range of models, including Llama 3, Gemini, DeepSeek-R1, deepseek-v3, PHI4, and more.
+
+:toc:
+
+* Website: https://ollama.com/ 
+* Github: https://github.com/ollama/ollama
+* Discord: https://discord.com/invite/ollama
+* LLM Models: https://ollama.com/library
+
+
+== TL&DR
+Install ollama and run a model:
+[source,bash]
+----
+curl -fsSL https://ollama.com/install.sh | sh
+ollama run deepseek-r1
+----
+
+Update the service to expose the model outside of the host machine and optimize for server deployment (optional):
+
+[source,bash]
+----
+systemctl edit ollama.service
+----
+
+Add the following content to the file:
+
+[source,bash]
+----
+[Service]
+Environment="OLLAMA_HOST=0.0.0.0"
+Environment="OLLAMA_ORIGINS=*"
+// allow more than one request at a time
+Environment="OLLAMA_NUM_PARALLEL=10"
+// improve performance for server deployments with NVIDIA GPUs or apple silicon
+Environment="OLLAMA_FLASH_ATTENTION=1"
+----
+
+== Install Ollama
+
+The installation is straightforward. On a Linux system, you can install Ollama using the following command:
+[source,bash]
+----
+curl -fsSL https://ollama.com/install.sh | sh
+----
+Check the installation:
+
+[source,bash]
+----
+ollama -h
+----
+
+=== Detailed Installation Instructions
+
+In case you need to install Ollama on a system that does not have `curl` installed or most likely you don't trust the installation script, you can use the following alternative installation method:
+
+[source,bash]
+----
+sudo apt update && sudo apt install -y curl wget git build-essential python3 python3-pip
+----
+
+For more detailed instructions, please refer to the official Detailed Installation Guide: https://github.com/ollama/ollama/blob/main/docs/linux.md
+
+== Install a Model
+
+Loading a model is done by the following command:
+[source,bash]
+----
+ollama pull deepseek-r1
+----
+
+The list of available models is available at https://ollama.com/library
+
+== Run a Model
+
+To run a model, you can use the following command:
+
+[source,bash]
+----
+ollama run deepseek-r1
+----
+
+
+== Use Ollama with an Agent (or any other external tool)
+
+Ollama is by default not exposed outside of the host machine. To expose it outside of the host machine, you need to set the following environment variable:
+
+[source,bash]
+----
+export OLLAMA_HOST=0.0.0.0
+----
+
+For service deployment, you can use the following commands:
+
+[source,bash]
+----
+systemctl edit ollama.service
+----
+
+Add the following content to the file:
+
+[source,bash]
+----
+[Service]
+Environment="OLLAMA_HOST=0.0.0.0"
+----
+
+Save the file and reload the service:
+
+[source,bash]
+----
+sudo systemctl daemon-reload
+sudo systemctl restart ollama
+----
+
+Details, see: https://github.com/ollama/ollama/blob/main/docs/faq.md
+
+=== Advanced Configuration
+
+The following configuration file is used to configure the service in case the original service configuration is overridden.
+
+[source,bash]
+----
+/etc/systemd/system/ollama.service.d/override.conf
+----
+
+The following content is added to the file:
+
+[source,bash]
+----
+[Service]
+Environment="OLLAMA_HOST=0.0.0.0"
+Environment="OLLAMA_ORIGINS=*"
+----
+
+Save the file and reload the service:
+
+[source,bash]
+----
+sudo systemctl daemon-reload
+sudo systemctl restart ollama
+----
+
+
+
+
+

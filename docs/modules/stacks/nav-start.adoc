@@ -1,2 +1,5 @@
+
+* Ollama
+** xref:ollama/ollama.adoc[Ollama]
 * Proxmox
 ** xref:proxmox/proxmox_ubuntu_template.adoc[Proxmox Ubuntu Template]
