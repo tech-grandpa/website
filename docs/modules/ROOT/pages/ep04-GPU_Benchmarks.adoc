@@ -1,9 +1,18 @@
-= GPU Benchmarks For Your AI Agents
+= Cloud vs. Homelab: Which is *Actually* Better for LLMs?
 
-:keywords: ai inference speed, ai inference benchmark, machine learning, artificial intelligence, ai agents, 
-:description: TBD
-:youtube: EQhK_2savvA
+:keywords: ai inference speed, ai inference benchmark, machine learning, artificial intelligence, ai agents, llm testing,llm,gpu benchmark,multi gpu inference,inference testing,nvidia gpu test,ai test,agentic ai hardware test,nvidia rtx a5000,nvidia rtx a6000,nvidia rtx 3090,nvidia rtx a6000 ada,cloud gpu test,ai infrastructure,homelab vs. cloud,cloud,homelab,runpod,cloud ai,homelab llm,local llm homelab
+:description: I battled my homelab machine cerebro against cloud machines with identical or better gpus to see if my local setup is worth it or not. The results were interesting to say the least, especially when it came to multi-gpu tests. Checkout the video and watch me scratching my head given some odd results along the way.
+:youtube: G7R_p6BKpbI
 
+I battled my homelab machine cerebro against cloud machines with identical or better GPUs to see if my local setup is worth it or not. The results are interesting to say the least, especially when it comes to multi-gpu tests. Checkout the video and watch me scratching my head given some odd results along the way.
 
+video::G7R_p6BKpbI[youtube,list=PLJkYus8HjPlFL6Q0Hv4bQ7NYT1HZLSxxp,width=780,height=439]
 
-video::EQhK_2savvA[youtube,list=PLJkYus8HjPlFL6Q0Hv4bQ7NYT1HZLSxxp,width=780,height=439]
+Links from the video 🔥:
+
+- GitHub Project with performance data and scripts: https://github.com/tech-grandpa/llmperf (with sources of the video)
+- SGLang: https://github.com/sgl-project/sglang
+- vLLM: https://github.com/vllm-project/vllm
+- Ollama: https://ollama.com
+- Llama-3.1-8B - FP8: https://huggingface.co/neuralmagic/Meta-Llama-3.1-8B-Instruct-FP8
+- Llama-3.1-8B - BF16: https://huggingface.co/unsloth/Meta-Llama-3.1-8B-Instruct

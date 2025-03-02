@@ -132,3 +132,9 @@ dist
 build/
 
 .DS_Store
+
+.idea/
+
+package.json
+
+package-lock.json
