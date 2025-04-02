@@ -1,6 +1,6 @@
 site:
   title: Tech Grandpa
-  url: https://tech-grandpa.org
+  url: https://techgrandpa.org
   start_page: website::index.adoc
   robots: allow
 content:

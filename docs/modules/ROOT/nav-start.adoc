@@ -1,5 +1,5 @@
 * xref:index.adoc[The Nitty-Gritty - YT Channel]
-// ** xref:ep04-GPU_Benchmarks.adoc[**EP-04:** GPU Benchmarks]
+** xref:ep04-GPU_Benchmarks.adoc[**EP-04:** GPU Benchmarks]
 ** xref:ep03-Project_Digits.adoc[**EP-03:** Project DIGITS]
 ** xref:ep02-HomeLab-Server.adoc[**EP-02:** AI home lab]
 ** xref:ep01-NUC.adoc[**EP-01:** External-GPU for AI]
