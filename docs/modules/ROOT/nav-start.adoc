@@ -1,5 +1,5 @@
 * xref:index.adoc[The Nitty-Gritty - YT Channel]
- ** xref:ep05-AI_machine_comparison.adoc[**EP-05:** I won't by the DGX Spark]
+ ** xref:ep05-AI_machine_comparison.adoc[**EP-05:** I won't buy the DGX Spark]
 ** xref:ep04-GPU_Benchmarks.adoc[**EP-04:** GPU Benchmarks]
 ** xref:ep03-Project_Digits.adoc[**EP-03:** Project DIGITS]
 ** xref:ep02-HomeLab-Server.adoc[**EP-02:** AI home lab]
