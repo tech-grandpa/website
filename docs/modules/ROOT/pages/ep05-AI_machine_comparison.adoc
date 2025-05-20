@@ -1,0 +1,57 @@
+= Why I am not gonna buy the NVIDIA DGX Spark
+
+:keywords: DGX Spark,Acemagic,Data Science,AI Inference,LLM Inference,Mac Studio,M4 Max,M3 Ultra,Framework Desktop,NVIDIA DGX,NVIDIA DGX Spark,Hardware Benchmark,Tech Review,Performance Test,Computing Hardware,Desktop Comparison,GPU Performance,Apple M4 Max Mac Studio,Apple M3 Ultra Mac Studio,m4 max mac studio,mac studio m4 max,mac studio m3 ultra,local ai,nvidia dgx station,nvidia dgx spark,acemagic
+:description: After looking being excited about the NVIDIA Spark during the introduction, I know compared the available specs with existing contenders and am no longer as impressed as I was during the initial announcement. Follow me along, while I compare the various option currently available.
+:youtube: R197j4x82SM
+
+What is the hottest pc for LLM inference at the moment? I looked at the NVIDIA DGX Spark, the Apple M3 Ultra Mac Studio, the Apple M4 Max Mac Studio, the Framework Desktop with the Ryzen AI MAX 395+ and the Acemagic F3A Mini PC with the Ryzen AI 9 HX 370 as my top picks for the title.
+
+In the video I go over the essential specs of each machine, before going into their respective llm performance expectations. We discuss how difficult it is to guess real LLM performance and what are driving factors and how vendors are optimizing their stats to convince us of the new shiny thing. Finally, I give you my personal take on the current state of affairs.
+
+
+video::R197j4x82SM[youtube,list=PLJkYus8HjPlFL6Q0Hv4bQ7NYT1HZLSxxp,width=780,height=439]
+
+== Erratum
+* I missed in my analysis that with a bigger context window usage, the computational performance becomes significantly more important. I missed to address this and thus the better hardware and software support of NVIDIA was under-represented. Thanks http://www.youtube.com/@piotr6967 and http://www.youtube.com/@KiraSlith for pointing this out!
+* There is no USB 5, but more correctly Thunderbolt 5. Thanks http://www.youtube.com/@DSDSDS1235
+* 15:47 Should refer to M4 Max Mac Studio and NOT the ULTRA - thanks to http://www.youtube.com/@erikjohnson9112 for this one.
+
+== Links from the video 🔥
+
+=== NVIDIA DGX Spark
+-  Reservation: https://marketplace.nvidia.com/en-us/developer/dgx-spark/?utm_source=nvidia
+- Spark Announcement: https://nvidianews.nvidia.com/news/nvidia-announces-dgx-spark-and-dgx-station-personal-ai-computers
+- DGX Spark Data Sheet: https://www.nvidia.com/en-us/products/workstations/dgx-spark/
+- GPU Comparison: https://www.pny.com/File%20Library/Company/Support/linecards/pro-viz-gpus/NVIDIA-Professional-Graphics-Linecard.pdf
+- ConnectX-7 Smart NIC: https://resources.nvidia.com/en-us-accelerated-networking-resource-library/connectx-7-datasheet
+
+
+=== Apple Mac chips
+* Specs M4: https://en.wikipedia.org/wiki/Apple_M4
+* Specs M3: https://en.wikipedia.org/wiki/Apple_M3
+* Specs M1: https://en.wikipedia.org/wiki/Apple_M1
+* Speed analysis: https://www.theregister.com/2024/10/31/apple_m4_ai_chip/
+* Performance analysis: https://creativestrategies.com/mac-studio-m3-ultra-ai-workstation-review/
+* FP16 support: https://machinelearning.apple.com/research/neural-engine-transformers
+* LLM performance + fine print: https://www.apple.com/mac-studio/
+* Asahi Linux: https://asahilinux.org/
+
+=== AMD
+* Ryzen AI Max 395+: https://www.amd.com/en/products/processors/laptop/ryzen/ai-300-series/amd-ryzen-ai-max-plus-395.html
+* Ryzen AI 9 HX 370: https://www.amd.com/en/products/processors/laptop/ryzen/ai-300-series/amd-ryzen-ai-9-hx-370.html
+* Ryzen 9 7950X: https://www.amd.com/de/products/processors/desktops/ryzen/7000-series/amd-ryzen-9-7950x.html
+* Framework Specs: https://frame.work/desktop?tab=specs
+* Framework Mainboard: https://frame.work/products/framework-desktop-mainboard-amd-ryzen-ai-max-300-series?v=FRAFMK0006
+* iFixit teardown: https://www.ifixit.com/News/108396/framework-let-us-in-for-an-early-teardown-of-the-refreshingly-open-framework-desktop
+* ACEMAGIC F3A Mini PC: https://acemagic.com/products/acemagic-f3a-mini-pc
+
+=== Reference Model used:
+* Llama 3.1 8B instruct: https://huggingface.co/neuralmagic/Meta-Llama-3.1-8B-Instruct-FP8/tree/main
+
+=== NVIDIA Specs
+* Product comparison: https://www.nvidia.com/en-us/products/workstations/professional-desktop-gpus/#nv-accordion-74849cdb51-item-f54a1eb297
+* A6000: https://resources.nvidia.com/en-us-briefcase-for-datasheets/proviz-print-nvidia-1?ncid=no-ncid
+* A6000 ADA: https://resources.nvidia.com/en-us-briefcase-for-datasheets/proviz-print-rtx6000-1?ncid=no-ncid
+* A6000 ADA Marketing Site: https://www.nvidia.com/en-us/design-visualization/rtx-6000/
+* A5000: https://resources.nvidia.com/en-us-briefcase-for-datasheets/nvidia-rtx-a5000-dat-1?ncid=no-ncid
+* A4000: https://resources.nvidia.com/en-us-briefcase-for-datasheets/nvidia-rtx-a4000-dat?ncid=no-ncid
