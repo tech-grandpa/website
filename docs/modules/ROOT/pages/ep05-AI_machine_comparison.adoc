@@ -8,6 +8,13 @@ What is the hottest pc for LLM inference at the moment? I looked at the NVIDIA D
 
 In the video I go over the essential specs of each machine, before going into their respective llm performance expectations. We discuss how difficult it is to guess real LLM performance and what are driving factors and how vendors are optimizing their stats to convince us of the new shiny thing. Finally, I give you my personal take on the current state of affairs.
 
+If you could run this command on your machine and share the results in the comments, this might help others as well with their decision. I know this provides a very limited insight, but it gives people an idea how systems compare:
+
+[source, bash]
+----
+ollama run --verbose llama3.1:8b-instruct-q8_0
+----
+Ollama needs to be downloaded and installed, in case you didn't know it (https://ollama.com/)
 
 video::R197j4x82SM[youtube,list=PLJkYus8HjPlFL6Q0Hv4bQ7NYT1HZLSxxp,width=780,height=439]
 
