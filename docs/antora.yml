@@ -3,4 +3,4 @@
  version: true
  nav:
  - modules/ROOT/nav-start.adoc
-#  - modules/stacks/nav-start.adoc
+ - modules/stacks/nav-start.adoc

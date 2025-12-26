@@ -1,27 +1,36 @@
-= How to create VM templates in Proxmox 
+= How to create VM templates for LLM workloads in Proxmox
 
 :keywords: proxmox, ubuntu, vm template, cloud init, ai template
 :description: Proxmox template creation for Ubuntu 24.04 LTS with cloud init support. This template is used for creating VMs for AI inference and training with GPU passthrough enabled.
 :source-language: bash
 
 :toc:
+== Intro
+This is a very simple guide that shows how to create a vm template and a vm out of it, that could serve as the basis for all of your image needs.
 
-## Pre-Requisites
+ATTENTION: This guide assumes, that you have a working proxmox installation with a storage backend for vm images (like LVM-thin) and a bridged network setup to provide the vms with network access. The guide was tested with Proxmox VE 9.0.
 
-Before we could start, we need to make sure, everything is setup correctly. Login into the root shell of the proxmox server. Install the libguestfs-tools to be able to manipulate vm images.
+== Pre-Requisites
+
+Before we could start, we need to make sure, everything is setup correctly. Login into the root shell of the proxmox server. Install the libguestfs-tools to be able to manipulate vm images and enable cloud init with its first boot configuration and setup options.
 
 [source, bash]
 ----
-// install the necessary tools on the proxmox host
-apt update -y && apt install libguestfs-tools -y
-----
+# install the necessary tools on the proxmox host
+apt install -y libguestfs-tools supermin qemu-system-x86 qemu-utils \
+               isc-dhcp-client iproute2 curl -y
+# enable snippets to install packages at first boot via cloud init
+pvesm set local --content images,iso,vztmpl,backup,snippets
 
-## Step 01: Get the Ubuntu image 
+----
+Also you want to switch the console to noVNC in the Options Section in Datacenter for the correct display of your terminal when it comes to commandline base ui - like `btop`.
+
+== Step 01: Get the Ubuntu image
 
 First we need to download the Ubuntu image and copy it to the proxmox template directory. For convenience we also rename it to ubuntu-base.img. This makes it easier to identify the image later on, even if we have different images later on.
 [source, bash]
 ----
-// change to the directory where proxmox keeps the iso images by default
+# change to the directory where proxmox keeps the iso images by default
 cd /var/lib/vz/template/iso/
 
 wget -P /var/lib/vz/template/iso/ https://cloud-images.ubuntu.com/daily/server/releases/24.04/release/ubuntu-24.04-server-cloudimg-amd64.img
@@ -29,72 +38,169 @@ wget -P /var/lib/vz/template/iso/ https://cloud-images.ubuntu.com/daily/server/r
 cp ubuntu-24.04-server-cloudimg-amd64.img ubuntu-base.img
 ----
 
-## Step 02: Massage the image to contain everything
+== Step 02: Massage the image to contain everything
 
 We need to install the qemu-guest-agent to be able to use the cloud init feature of proxmox. We also install the ubuntu-drivers-common package to be able to automatically install the correct drivers for the GPU.
 
 [source, bash]
 ----
-virt-customize -a ubuntu-base.img --install qemu-guest-agent
-
-// sudo apt install ubuntu-drivers-common
-virt-customize -a ubuntu-base.img --install ubuntu-drivers-common
-
-// optionally disable ipv6
-virt-customize -a ubuntu-base.img --run-command "echo 'net.ipv6.conf.all.disable_ipv6 = 1' >> /etc/sysctl.conf"
-virt-customize -a ubuntu-base.img --run-command "echo 'net.ipv6.conf.default.disable_ipv6 = 1' >> /etc/sysctl.conf"
-virt-customize -a ubuntu-base.img --run-command "echo 'net.ipv6.conf.lo.disable_ipv6 = 1' >> /etc/sysctl.conf"
-virt-customize -a ubuntu-base.img --run-command "sysctl -p"
-
-
-// remove unique identifier of the image 
-virt-customize -a ubuntu-base.img --run-command "cloud-init clean --seed --logs --machine-id && truncate -s 0 /etc/machine-id"
+# disable ipv6, generated identifier and install ubuntu-driver during start-up
+virt-customize -a ubuntu-base.img \
+  --write '/etc/apt/apt.conf.d/99force-ipv4:Acquire::ForceIPv4 "true";' \
+  --write '/etc/sysctl.d/99-disable-ipv6.conf:net.ipv6.conf.all.disable_ipv6 = 1
+net.ipv6.conf.default.disable_ipv6 = 1
+net.ipv6.conf.lo.disable_ipv6 = 1
+' \
+  --run-command 'if command -v cloud-init >/dev/null 2>&1; then cloud-init clean --seed --logs --machine-id; fi' \
+  --run-command 'truncate -s 0 /etc/machine-id'
 ----
 
 
-## Step 03: Create the VM template
-
+== Step 03: Create the VM template
+Setup the simulated hardware. This one will be compatible for gpu use, but potentially less compatible with other setups (the machine type `q35` in particular)
 ----
 qm create 6000 \
-  --name "ubuntu-24.04-cloud-init-template" \
+  --name "ubuntu-24.04-template" \
   --memory 16384 \
-  --cores 4 \
+  --cores 2 \
   --cpu host \
   --machine q35 \
   --description "Base ubuntu 24.04 template" \
-  --net0 virtio,bridge=vmbr0,tag=42 \
-  --agent enabled=1 \
+  --net0 virtio,bridge=vmbr0,tag=7 \
   --ipconfig0 ip=dhcp \
-  --tags ubuntu-template,24.04LTS
+  --tags ubuntu-24.04LTS
+----
+NOTE: When running with vlan, make sure the node is not running with the same vlan tag (see `7` above) and the proxmox node has vlan aware enabled under "Datacenter > 'node-name' >> Network > vmbr0 > VLAN aware: Yes"
 
+Now use the ubuntu image and configure the vm.
+----
 qm importdisk 6000 /var/lib/vz/template/iso/ubuntu-base.img fastSingle
 
-
+# NOTE:
+# "fastSingle" is a LVM-thin pool name of a disk to provision from.
+# It was created in advance and serves as a pool for harddrive resources.
+# 'vm-6000-disk-0' is the convention on how to name the disks.
 qm set 6000 --scsihw virtio-scsi-pci \
   --scsi0 fastSingle:vm-6000-disk-0,ssd=1 \
   --boot c \
   --bootdisk scsi0 \
   --ide2 fastSingle:cloudinit \
-  --serial0 socket --vga serial0 \
+  --serial0 socket \
+  --vga std \
   --bios ovmf \
-  --efidisk0 fastSingle:0,efitype=4m,size=4M
-  
-qm set 6000 --ciuser ng \
-  --cipassword Pass1234 \
-  --sshkey /etc/pve/priv/authorized_keys
+  --efidisk0 fastSingle:0,efitype=4m,size=4M \
+  --agent enabled=1
 
+# increase the ssd size - for llm storage 4GB (default) are not a lot
 qm resize 6000 scsi0 +200G
+----
 
+== Step 04: Adapt the installation to fit your needs
+With cloud init you could not "just" add user, but also tools, libraries and much more. The following options are mutually exclusive (you could only use one cloud-init file), but you combine their content in one-file if needed.
+
+=== Option A: Make a lightweight image with only minimal changes
+Here only a user is created and the image is prepared to be used in proxmox together with some NVIDIA gpus (driver support).
+
+WARNING: Please note, that the example contain credentials. These are just examples. Please do change them before actually using them!
+
+----
+# write custom cloud-init user-data inline into Proxmox snippets storage
+cat > /var/lib/vz/snippets/ubuntu-cloudinit.yaml <<'EOF'
+#cloud-config
+locale: en_US.UTF-8
+package_update: true
+users:
+  - name: ng
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    groups: users,admin
+    shell: /bin/bash
+    lock_passwd: false
+    plain_text_passwd: 'superSecret'
+    ssh_authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDH6vfDRpPQuVxqI+2XQ7MdC5Fu/ku/4OhOu8XN+OpIddF+qTmWRyuBRv9RmIPN1G1wFaIwp+j3cdm4YT+FIThm+hSnGQ+rXEMq4X/7WbJX/81lj2qdE9CrZ/K5N8czPymBeYmjTKofIbHjxnn3vVCBXJbgEqEUNp4qwfJMVrMUKDZZhJOMJJZuPkbwKJZ5pEGpT/szrB5j6mSEaFwL+RtwOxCteoqw6oiBaTfAvDNHszHNHfu+ZGiw608kweXpBH1pg27a67FB1bxrK4zFnUxNoUcpWknStClIArYQQKyjpj2buanRjti2KOyc4sjLW9laDosEMkmHnB6EO21uVYyd
+# add packages you always need to have installed for your vms
+packages:
+  - qemu-guest-agent
+  - ubuntu-drivers-common
+# run "install" command on first boot
+runcmd:
+  - [ apt, upgrade, -y]
+  - [ snap, install, btop ]
+  - [ systemctl, enable, --now, qemu-guest-agent ]
+  - [ ubuntu-drivers, autoinstall ]
+EOF
+
+# now attach that snippet to your VM
+qm set 6000 --cicustom "user=local:snippets/ubuntu-cloudinit.yaml"
+----
+
+=== Option B: Make a docker enabled image
+In contrast to option A, this one has docker installed and configured to be used directly. This is great, when you just want to test out a new docker image, but you don't want to do this on one of your established host.
+
+----
+# write custom cloud-init user-data inline into Proxmox snippets storage
+cat > /var/lib/vz/snippets/ubuntu-docker-cloudinit.yaml <<'EOF'
+#cloud-config
+locale: en_US.UTF-8
+package_update: true
+users:
+  - name: ng
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    groups: users,admin,docker
+    shell: /bin/bash
+    lock_passwd: false
+    plain_text_passwd: 'superSecret'
+    ssh_authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDH6vfDRpPQuVxqI+2XQ7MdC5Fu/ku/4OhOu8XN+OpIddF+qTmWRyuBRv9RmIPN1G1wFaIwp+j3cdm4YT+FIThm+hSnGQ+rXEMq4X/7WbJX/81lj2qdE9CrZ/K5N8czPymBeYmjTKofIbHjxnn3vVCBXJbgEqEUNp4qwfJMVrMUKDZZhJOMJJZuPkbwKJZ5pEGpT/szrB5j6mSEaFwL+RtwOxCteoqw6oiBaTfAvDNHszHNHfu+ZGiw608kweXpBH1pg27a67FB1bxrK4zFnUxNoUcpWknStClIArYQQKyjpj2buanRjti2KOyc4sjLW9laDosEMkmHnB6EO21uVYyd
+# add packages you always need to have installed for your vms
+packages:
+  - qemu-guest-agent
+  - ubuntu-drivers-common
+  - apt-transport-https
+  - software-properties-common
+# run "install" command on first boot
+runcmd:
+  - [ snap, install, btop ]
+  - [ systemctl, enable, --now, qemu-guest-agent ]
+  - [ ubuntu-drivers, autoinstall ]
+# docker installation
+  - [ apt-get, update ]
+  - [ apt-get, install, -y, ca-certificates, curl, gnupg ]
+  - [ install, -m, '0755', -d, /etc/apt/keyrings ]
+  - [ bash, -c, 'curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --batch --yes --dearmor -o /etc/apt/keyrings/docker.gpg' ]
+  - [ chmod, a+r, /etc/apt/keyrings/docker.gpg ]
+  - [ bash, -c, 'echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo $VERSION_CODENAME) stable" > /etc/apt/sources.list.d/docker.list' ]
+  - [ apt-get, update ]
+  - [ apt-get, install, -y, docker-ce, docker-ce-cli, containerd.io, docker-buildx-plugin, docker-compose-plugin ]
+  - [ usermod, -aG, docker, ng ]
+  - [ systemctl, enable, --now, docker ]
+
+EOF
+
+# now attach that snippet to your VM
+qm set 6000 --cicustom "user=local:snippets/ubuntu-docker-cloudinit.yaml"
+
+# rename the template to reflect that it comes with docker installed
+qm set 6000 --name "ubuntu-24.04-template-with-docker"
+----
+
+
+
+== Step 05: Create a proxmox template
+Once everything is set, create a template to create vms from it easily.
+----
+# once everything seems to work, make it a template, so we don't have to do that over and over again.
 qm template 6000
 
 ----
 
-## Step 04: Create an VM from the template
+== Step 06: Create a VM from the template
 ----
+# 6000 is the id of the template and 200 is the id of the generated vm, followed by its name in the UI.
 qm clone 6000 200 --name worker-01 --full --storage fastSingle --description "Ubuntu 24.04 cloud image."
 ----
 
-# References
+== References
 
 https://pve.proxmox.com/wiki/Cloud-Init_Support
 
