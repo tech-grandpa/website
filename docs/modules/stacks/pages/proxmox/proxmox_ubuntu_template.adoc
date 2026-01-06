@@ -8,7 +8,7 @@
 == Intro
 This is a very simple guide that shows how to create a vm template and a vm out of it, that could serve as the basis for all of your image needs.
 
-ATTENTION: This guide assumes, that you have a working proxmox installation with a storage backend for vm images (like LVM-thin) and a bridged network setup to provide the vms with network access. The guide was tested with Proxmox VE 9.1.
+WARNING: This guide assumes, that you have a working proxmox installation with a storage backend for vm images (like LVM-thin) and a bridged network setup to provide the vms with network access. The guide was tested with Proxmox VE 9.1.
 
 == Pre-Requisites
 
@@ -64,7 +64,7 @@ Setup the simulated hardware. This one will be compatible for gpu use, but poten
 ----
 qm create 6000 \
   --name "ubuntu-24.04-template" \
-  --memory 16384 \
+  --memory 2048 \
   --cores 2 \
   --cpu host \
   --machine q35 \
@@ -81,7 +81,7 @@ qm importdisk 6000 /var/lib/vz/template/iso/ubuntu-base.img fastSingle
 
 # NOTE:
 # "fastSingle" is a LVM-thin pool name of a disk to provision from.
-# It was created in advance and serves as a pool for harddrive resources.
+# It was created in advance and serves as a pool for hard drive resources.
 # 'vm-6000-disk-0' is the convention on how to name the disks.
 qm set 6000 --scsihw virtio-scsi-pci \
   --scsi0 fastSingle:vm-6000-disk-0,ssd=1 \
@@ -94,8 +94,8 @@ qm set 6000 --scsihw virtio-scsi-pci \
   --efidisk0 fastSingle:0,efitype=4m,size=4M \
   --agent enabled=1
 
-# increase the ssd size - for llm storage 4GB (default) are not a lot
-qm resize 6000 scsi0 +200G
+# increase the ssd size - for llm storage 3.5 GB (default) are not a lot
+qm resize 6000 scsi0 +100G
 ----
 
 == Step 04: Adapt the installation to fit your needs
@@ -126,7 +126,7 @@ users:
 runcmd:
   - [ apt, upgrade, -y]
   # install the drivers for the GPU (if a GPU is present)
-  - [ apt, ubuntu-drivers, autoinstall ]
+  - [ ubuntu-drivers, autoinstall ]
   - [ snap, install, btop ]
 EOF
 ----
@@ -166,7 +166,7 @@ runcmd:
 # docker installation
   - [ apt, update]
   # install the drivers for the GPU (if a GPU is present)
-  - [ apt, ubuntu-drivers, autoinstall ]
+  - [ ubuntu-drivers, autoinstall ]
   # install docker and docker-compose
   - [ apt, install, -y, ca-certificates, curl, gnupg ]
   - [ install, -m, '0755', -d, /etc/apt/keyrings ]
