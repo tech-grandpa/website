@@ -8,7 +8,7 @@
 == Intro
 This is a very simple guide that shows how to create a vm template and a vm out of it, that could serve as the basis for all of your image needs.
 
-ATTENTION: This guide assumes, that you have a working proxmox installation with a storage backend for vm images (like LVM-thin) and a bridged network setup to provide the vms with network access. The guide was tested with Proxmox VE 9.0.
+ATTENTION: This guide assumes, that you have a working proxmox installation with a storage backend for vm images (like LVM-thin) and a bridged network setup to provide the vms with network access. The guide was tested with Proxmox VE 9.1.
 
 == Pre-Requisites
 
@@ -17,8 +17,7 @@ Before we could start, we need to make sure, everything is setup correctly. Logi
 [source, bash]
 ----
 # install the necessary tools on the proxmox host
-apt install -y libguestfs-tools supermin qemu-system-x86 qemu-utils \
-               isc-dhcp-client iproute2 curl -y
+apt install -y libguestfs-tools curl -y
 # enable snippets to install packages at first boot via cloud init
 pvesm set local --content images,iso,vztmpl,backup,snippets
 
@@ -44,13 +43,17 @@ We need to install the qemu-guest-agent to be able to use the cloud init feature
 
 [source, bash]
 ----
-# disable ipv6, generated identifier and install ubuntu-driver during start-up
+# disable ipv6, generated identifier and install relevant packages during start-up
 virt-customize -a ubuntu-base.img \
   --write '/etc/apt/apt.conf.d/99force-ipv4:Acquire::ForceIPv4 "true";' \
   --write '/etc/sysctl.d/99-disable-ipv6.conf:net.ipv6.conf.all.disable_ipv6 = 1
 net.ipv6.conf.default.disable_ipv6 = 1
 net.ipv6.conf.lo.disable_ipv6 = 1
 ' \
+  --install qemu-guest-agent \
+  --install ubuntu-drivers-common \
+  --run-command 'systemctl enable qemu-guest-agent || true' \
+  --run-command 'ubuntu-drivers autoinstall' \
   --run-command 'if command -v cloud-init >/dev/null 2>&1; then cloud-init clean --seed --logs --machine-id; fi' \
   --run-command 'truncate -s 0 /etc/machine-id'
 ----
@@ -66,11 +69,11 @@ qm create 6000 \
   --cpu host \
   --machine q35 \
   --description "Base ubuntu 24.04 template" \
-  --net0 virtio,bridge=vmbr0,tag=7 \
+  --net0 virtio,bridge=vmbr0 \
   --ipconfig0 ip=dhcp \
   --tags ubuntu-24.04LTS
 ----
-NOTE: When running with vlan, make sure the node is not running with the same vlan tag (see `7` above) and the proxmox node has vlan aware enabled under "Datacenter > 'node-name' >> Network > vmbr0 > VLAN aware: Yes"
+WARNING: When running with vlan, make sure the node is not running with the same vlan tag (e.g. like so: `--net0 virtio,bridge=vmbr0,tag=7`) and the proxmox node has vlan aware enabled under "Datacenter > 'node-name' >> Network > vmbr0 > VLAN aware: Yes"
 
 Now use the ubuntu image and configure the vm.
 ----
@@ -115,24 +118,25 @@ users:
     groups: users,admin
     shell: /bin/bash
     lock_passwd: false
+    # FIXME:change this to your own password and ssh key
     plain_text_passwd: 'superSecret'
     ssh_authorized_keys:
       - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDH6vfDRpPQuVxqI+2XQ7MdC5Fu/ku/4OhOu8XN+OpIddF+qTmWRyuBRv9RmIPN1G1wFaIwp+j3cdm4YT+FIThm+hSnGQ+rXEMq4X/7WbJX/81lj2qdE9CrZ/K5N8czPymBeYmjTKofIbHjxnn3vVCBXJbgEqEUNp4qwfJMVrMUKDZZhJOMJJZuPkbwKJZ5pEGpT/szrB5j6mSEaFwL+RtwOxCteoqw6oiBaTfAvDNHszHNHfu+ZGiw608kweXpBH1pg27a67FB1bxrK4zFnUxNoUcpWknStClIArYQQKyjpj2buanRjti2KOyc4sjLW9laDosEMkmHnB6EO21uVYyd
-# add packages you always need to have installed for your vms
-packages:
-  - qemu-guest-agent
-  - ubuntu-drivers-common
 # run "install" command on first boot
 runcmd:
   - [ apt, upgrade, -y]
+  # install the drivers for the GPU (if a GPU is present)
+  - [ apt, ubuntu-drivers, autoinstall ]
   - [ snap, install, btop ]
-  - [ systemctl, enable, --now, qemu-guest-agent ]
-  - [ ubuntu-drivers, autoinstall ]
 EOF
+----
 
-# now attach that snippet to your VM
+now attach that snippet to your VM
+
+----
 qm set 6000 --cicustom "user=local:snippets/ubuntu-cloudinit.yaml"
 ----
+
 
 === Option B: Make a docker enabled image
 In contrast to option A, this one has docker installed and configured to be used directly. This is great, when you just want to test out a new docker image, but you don't want to do this on one of your established host.
@@ -154,36 +158,57 @@ users:
       - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDH6vfDRpPQuVxqI+2XQ7MdC5Fu/ku/4OhOu8XN+OpIddF+qTmWRyuBRv9RmIPN1G1wFaIwp+j3cdm4YT+FIThm+hSnGQ+rXEMq4X/7WbJX/81lj2qdE9CrZ/K5N8czPymBeYmjTKofIbHjxnn3vVCBXJbgEqEUNp4qwfJMVrMUKDZZhJOMJJZuPkbwKJZ5pEGpT/szrB5j6mSEaFwL+RtwOxCteoqw6oiBaTfAvDNHszHNHfu+ZGiw608kweXpBH1pg27a67FB1bxrK4zFnUxNoUcpWknStClIArYQQKyjpj2buanRjti2KOyc4sjLW9laDosEMkmHnB6EO21uVYyd
 # add packages you always need to have installed for your vms
 packages:
-  - qemu-guest-agent
-  - ubuntu-drivers-common
   - apt-transport-https
   - software-properties-common
 # run "install" command on first boot
 runcmd:
   - [ snap, install, btop ]
-  - [ systemctl, enable, --now, qemu-guest-agent ]
-  - [ ubuntu-drivers, autoinstall ]
 # docker installation
-  - [ apt-get, update ]
-  - [ apt-get, install, -y, ca-certificates, curl, gnupg ]
+  - [ apt, update]
+  # install the drivers for the GPU (if a GPU is present)
+  - [ apt, ubuntu-drivers, autoinstall ]
+  # install docker and docker-compose
+  - [ apt, install, -y, ca-certificates, curl, gnupg ]
   - [ install, -m, '0755', -d, /etc/apt/keyrings ]
   - [ bash, -c, 'curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --batch --yes --dearmor -o /etc/apt/keyrings/docker.gpg' ]
   - [ chmod, a+r, /etc/apt/keyrings/docker.gpg ]
   - [ bash, -c, 'echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo $VERSION_CODENAME) stable" > /etc/apt/sources.list.d/docker.list' ]
-  - [ apt-get, update ]
-  - [ apt-get, install, -y, docker-ce, docker-ce-cli, containerd.io, docker-buildx-plugin, docker-compose-plugin ]
+  - [ apt, update ]
+  - [ apt, install, -y, docker-ce, docker-ce-cli, containerd.io, docker-buildx-plugin, docker-compose-plugin ]
   - [ usermod, -aG, docker, ng ]
   - [ systemctl, enable, --now, docker ]
 
 EOF
+----
 
-# now attach that snippet to your VM
+
+now attach that snippet to your VM
+
+----
 qm set 6000 --cicustom "user=local:snippets/ubuntu-docker-cloudinit.yaml"
+----
 
-# rename the template to reflect that it comes with docker installed
+rename the template to reflect that it comes with docker installed
+----
 qm set 6000 --name "ubuntu-24.04-template-with-docker"
 ----
 
+=== GPU Passthrough
+If you want to use GPU passthrough, you need to add the GPU to the VM template.
+
+Also make sure, the drivers are installed in the cloud-init snippet by adding the following to the runcmd section of the cloud-init snippet. The above examples already contain this. 
+
+----
+# install the drivers for the GPU (if a GPU is present)
+  - [ apt, ubuntu-drivers, autoinstall ]
+----
+
+WARNING: Be aware, that the GPU must be attached during the first boot of the VM. If you failed to do this, you can still attach it manually after the first boot and consequently rebooting the VM. You also have to add the drivers then manually.
+
+To verify, that the GPU is attached and the drivers are installed, you can run the following command. This should show you the GPU(s) and the drivers installed.
+----
+nvidia-smi
+----
 
 
 == Step 05: Create a proxmox template
@@ -202,8 +227,11 @@ qm clone 6000 200 --name worker-01 --full --storage fastSingle --description "Ub
 
 == References
 
+Details regarding cloud-init setup:
 https://pve.proxmox.com/wiki/Cloud-Init_Support
 
-https://pve.proxmox.com/wiki/Cloud-Init_Support#GPU_passthrough
+Details regarding GPU passthrough setup:
+https://pve.proxmox.com/wiki/PCI_Passthrough#Nvidia_specific_issues
 
+Details regarding libguestfs:
 https://libguestfs.org/

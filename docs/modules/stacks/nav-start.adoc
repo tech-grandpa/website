@@ -2,5 +2,6 @@
 * Ollama
 ** xref:ollama/ollama.adoc[Ollama Basic Setup]
 * Proxmox
+** xref:proxmox/proxmox_setup.adoc[Proxmox Initial Setup]
 ** xref:proxmox/proxmox_ubuntu_template.adoc[Proxmox Ubuntu Template for AI]
 // ** xref:proxmox/gpu_passthrough.adoc[GPU Passthrough in Proxmox]

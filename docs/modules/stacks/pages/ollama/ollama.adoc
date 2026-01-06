@@ -39,6 +39,14 @@ Environment="OLLAMA_NUM_PARALLEL=10"
 Environment="OLLAMA_FLASH_ATTENTION=1"
 ----
 
+Save the file and reload the service:
+
+[source,bash]
+----
+sudo systemctl daemon-reload
+sudo systemctl restart ollama
+----
+
 == Install Ollama
 
 The installation is straightforward. On a Linux system, you can install Ollama using the following command:
